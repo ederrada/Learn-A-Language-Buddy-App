@@ -1,0 +1,48 @@
+{
+  "project_info": {
+    "project_number": "97898912615",
+    "project_id": "ultra-zenith-112233",
+    "storage_bucket": "ultra-zenith-112233.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:97898912615:android:bb2e0e61398dce5efcadc2",
+        "android_client_info": {
+          "package_name": "com.example.learn_a_language_buddy"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyC2n8BxP8pJZAaPZCrmMMNa_D4okhvN8Xs"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:97898912615:android:2f74aa894c211d59fcadc2",
+        "android_client_info": {
+          "package_name": "com.example.learn_a_language_buddy_app_test"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyC2n8BxP8pJZAaPZCrmMMNa_D4okhvN8Xs"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
