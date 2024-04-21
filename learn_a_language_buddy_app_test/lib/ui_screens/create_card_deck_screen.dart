@@ -1,9 +1,14 @@
 import 'package:flutter/material.dart';
+import 'package:learn_a_language_buddy_app_test/services/fb_firestore_service.dart';
 //TODO: Import necessary packages
 
 class CreateCardDeckScreen extends StatelessWidget {
-  const CreateCardDeckScreen({super.key});
+  final FirestoreService firestoreService = FirestoreService();
+  final TextEditingController titleController = TextEditingController();
+  final List<Map<String, dynamic>> flashcards = [];
 
+  CreateCardDeckScreen({super.key});
+  
   @override
   Widget build(BuildContext context) {
     return Scaffold(
