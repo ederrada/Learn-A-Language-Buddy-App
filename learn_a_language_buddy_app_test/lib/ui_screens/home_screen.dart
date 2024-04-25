@@ -192,7 +192,7 @@ class HomeScreen extends StatelessWidget {
                       final cardDeck = cardDecks[index];
                       return GestureDetector(
                         onTap: () {
-                          // Navigate to view/edit card deck screen
+                          // Navigate to list of flashcards screen
                           Navigator.push(
                             context,
                             MaterialPageRoute(
@@ -206,11 +206,13 @@ class HomeScreen extends StatelessWidget {
                           margin: const EdgeInsets.all(8.0),
                           child: ListTile(
                             title: Text(cardDeck.title),
-                            //subtitle: Text('Category: ${cardDeck.category}'),
                             subtitle: Column(
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
                                 Text(
+
+                                    //'Category: ${cardDeck.category}'),
+
                                     'Category: ${cardDeck.category} | Flashcards: ${cardDeck.flashcardCount}'),
                                 Text(
                                     'Created: ${DateFormat.yMMMd().format(cardDeck.createdAt)}'),

@@ -1,15 +1,19 @@
-class Flashcard {
-  final String userId;
-  final String deckId;
-  final String flashcardId;
-  final String frontText;
-  final String backText;
+//import 'package:cloud_firestore/cloud_firestore.dart';
 
-  Flashcard({
-    required this.userId,
-    required this.deckId,
-    required this.flashcardId,
-    required this.frontText,
-    required this.backText,
-  });
+class Flashcard {
+  //final String userId;
+  //final String deckId;
+  final String flashcardId;
+  final String sourceText;
+  final String translatedText;
+  final DateTime createdAt;
+
+  Flashcard(
+      {
+      //required this.userId,
+      //required this.deckId,
+      required this.flashcardId,
+      required this.sourceText,
+      required this.translatedText,
+      required this.createdAt});
 }

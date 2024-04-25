@@ -1,5 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:learn_a_language_buddy_app_test/models/card_deck.dart';
+import 'package:learn_a_language_buddy_app_test/models/flashcard.dart';
 
 class FirestoreService {
   final FirebaseFirestore db = FirebaseFirestore.instance;
@@ -71,25 +72,19 @@ class FirestoreService {
         'deckId': deckId,
         'title': title,
         'category': category,
-        //'language': language,
-        //'flashcardCount': 0,
         'createdAt': FieldValue.serverTimestamp(),
       });
-
-      // await db
-      //     .collection('users')
-      //     .doc(userId)
-      //     .collection('cardDecks')
-      //     .doc(deckId)
-      //     .update({
-      //   'flashcardCount':
-      //       FieldValue.increment(1), // Increment flashcard count by 1
-      // });
     } catch (e) {
       print('Error creating card deck: $e');
       rethrow;
     }
   }
+
+  // Future<int> countDocumentsInCollection(String collectionPath) async {
+  //   QuerySnapshot<Map<String, dynamic>> snapshot =
+  //       await db.collection(collectionPath).get();
+  //   return snapshot.size;
+  // }
 
   //READ: Retrieve all card decks for a user
   Stream<List<CardDeck>> getCardDecks(String userId) {
@@ -105,7 +100,8 @@ class FirestoreService {
         String deckId = doc.id;
         String title = data['title'] ?? '';
         String category = data['category'] ?? '';
-        int flashcardCount = snapshot.size;
+        int flashcardCount = data['flashcardCount'] ?? 0;
+        Timestamp createdAt = data['createdAt'];
 
         // Create a CardDeck object and add it to the list
         CardDeck cardDeck = CardDeck(
@@ -113,44 +109,13 @@ class FirestoreService {
           title: title,
           category: category,
           flashcardCount: flashcardCount,
-          createdAt: DateTime.timestamp(),
-          //createdAt: FieldValue.serverTimestamp(),
+          createdAt: createdAt.toDate(),
         );
         cardDecks.add(cardDeck);
       }
       return cardDecks;
     });
   }
-
-//   Stream<List<CardDeck>> getCardDecks() {
-//   return db
-//       .collection('users') // Assuming card decks are stored under 'users' collection
-//       .snapshots()
-//       .map((snapshot) {
-//     List<CardDeck> cardDecks = [];
-//     for (var doc in snapshot.docs) {
-//       var data = doc.data();
-//       // Extract necessary fields from the document data
-//       String deckId = doc.id;
-//       String title = data['title'] ?? '';
-//       String category = data['category'] ?? '';
-//       // String language = data['language'] ?? '';
-//       // int flashcardCount = data['flashcardCount'] ?? 0;
-
-//       // Create a CardDeck object and add it to the list
-//       CardDeck cardDeck = CardDeck(
-//         id: deckId,
-//         title: title,
-//         category: category,
-//         // language: language,
-//         // flashcardCount: flashcardCount,
-//         createdAt: FieldValue.serverTimestamp(), // Use DateTime.now() as a placeholder for createdAt
-//       );
-//       cardDecks.add(cardDeck);
-//     }
-//     return cardDecks;
-//   });
-// }
 
   //UPDATE: Update a card deck information
   Future<void> updateCardDeck(String userId, String deckId, String title,
@@ -265,8 +230,62 @@ class FirestoreService {
   // }
 
   //READ: Retrieve all flashcards for a specific card deck
-  Stream<List<DocumentSnapshot>> getFlashcardsForDeck(
-      String userId, String deckId) {
+  // Stream<List<Flashcard>> getFlashcardsForDeck(String userId, String deckId) {
+  //   return db
+  //       .collection('users')
+  //       .doc(userId)
+  //       .collection('cardDecks')
+  //       .doc(deckId)
+  //       .collection('flashcards')
+  //       .snapshots()
+  //       .map((snapshot) {
+  //     return snapshot.docs.map((doc) {
+  //       var data = doc.data();
+  //       Timestamp createdAt = data['createdAt'];
+
+  //       return Flashcard(
+  //         //deckId: doc.id,
+  //         flashcardId: doc.id,
+  //         frontText: data['frontText'] ?? '',
+  //         backText: data['backText'] ?? '',
+  //         createdAt: createdAt.toDate(),
+  //       );
+  //     }).toList();
+  //   });
+  // }
+
+//MAY NOT BE WORKING PROPERLY
+  // Stream<List<Flashcard>> getFlashcardsForDeck(String userId, String deckId) {
+  //       return db
+  //       .collection('users')
+  //       .doc(userId)
+  //       .collection('cardDecks')
+  //       .doc(deckId)
+  //       .collection('flashcards')
+  //       .snapshots()
+  //       .map((snapshot) {
+  //     List<Flashcard> flashcards = [];
+  //     for (var doc in snapshot.docs) {
+  //       var data = doc.data();
+  //       String flashcardId = doc.id;
+  //       String frontText = data['frontText'] ?? '';
+  //       String backText = data['backText'] ?? '';
+  //       Timestamp createdAt = data['createdAt'];
+
+  //       // Create a CardDeck object and add it to the list
+  //       Flashcard flashcard = Flashcard(
+  //         flashcardId: flashcardId,
+  //         frontText: frontText,
+  //         backText: backText,
+  //         createdAt: createdAt.toDate(),
+  //       );
+  //       flashcards.add(flashcard);
+  //     }
+  //     return flashcards;
+  //   });
+  // }
+
+  Stream<List<Flashcard>> getFlashcardsForDeck(String userId, String deckId) {
     return db
         .collection('users')
         .doc(userId)
@@ -274,8 +293,76 @@ class FirestoreService {
         .doc(deckId)
         .collection('flashcards')
         .snapshots()
-        .map((snapshot) => snapshot.docs.toList());
+        .map((snapshot) {
+      return snapshot.docs.map((doc) {
+        return Flashcard(
+          flashcardId: doc.id,
+          sourceText: doc.data()['sourceText'] ?? '',
+          translatedText: doc.data()['translatedText'] ?? '',
+          createdAt: (doc.data()['createdAt']).toDate(),
+        );
+      }).toList();
+    });
   }
+
+// Stream<List<CardDeck>> getCardDecks(String userId) {
+//     return db
+//         .collection('users')
+//         .doc(userId)
+//         .collection('cardDecks')
+//         .snapshots()
+//         .map((snapshot) {
+//       List<CardDeck> cardDecks = [];
+//       for (var doc in snapshot.docs) {
+//         var data = doc.data();
+//         String deckId = doc.id;
+//         String title = data['title'] ?? '';
+//         String category = data['category'] ?? '';
+//         int flashcardCount = data['flashcardCount'] ?? 0;
+//         Timestamp createdAt = data['createdAt'];
+//         //Future<int> flashcardCount = countDocumentsInCollection('flashcards');
+
+//         //int flashcardCount = db.collection('');
+
+//         // Create a CardDeck object and add it to the list
+//         CardDeck cardDeck = CardDeck(
+//           id: deckId,
+//           title: title,
+//           category: category,
+//           flashcardCount: flashcardCount,
+//           createdAt: createdAt.toDate(),
+//           //createdAt: FieldValue.serverTimestamp(),
+//         );
+//         cardDecks.add(cardDeck);
+//       }
+//       return cardDecks;
+//     });
+//   }
+
+//   Stream<List<CardDeck>> getCardDecks(String userId) {
+//   return db
+//       .collection('users')
+//       .doc(userId)
+//       .collection('cardDecks')
+//       .snapshots()
+//       .map((snapshot) {
+//     return snapshot.docs.map((doc) {
+//       var data = doc.data();
+//       return CardDeck(
+//         id: doc.id,
+//         title: data['title'] ?? '',
+//         category: data['category'] ?? '',
+//         // Add other fields as needed
+//       );
+//     }).toList();
+//   });
+// }
+
+  // final String userId;
+  // final String deckId;
+  // final String flashcardId;
+  // final String frontText;
+  // final String backText;
 
   //UPDATE: Update a flashcard within a specific card deck
   Future<void> updateFlashcardInDeck(String userId, String deckId,

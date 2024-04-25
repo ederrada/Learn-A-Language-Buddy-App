@@ -26,23 +26,21 @@ class CreateFlashcardScreenState extends State<CreateFlashcardScreen> {
   TextEditingController frontTextController = TextEditingController();
   String translatedText = '';
 
-
   final Uuid uuid = const Uuid();
   final FirestoreService db = FirestoreService();
   final AuthService auth = AuthService();
 
   void translateText(String sourceText) async {
-    final translation = await sourceText.translate(to: 'es');
+    final translation = await sourceText.translate(to: 'tl');
 
     setState(() {
-      translatedText = 'Translated: ${translation.text}';
+      translatedText = translation.text;
     });
   }
 
   @override
   Widget build(BuildContext context) {
     CardDeck myCardDeck = widget.cardDeck;
-
 
     return Scaffold(
       appBar: AppBar(
@@ -102,10 +100,16 @@ class CreateFlashcardScreenState extends State<CreateFlashcardScreen> {
 
                 //Grab the current card deck ID
                 String deckId = myCardDeck.id;
-                
+
                 try {
                   // Create the card deck in Firestore
-                  await db.addFlashcardToDeck(userId, deckId, flashcardId, translatedText, sourceText);
+                  await db.addFlashcardToDeck(
+                    userId,
+                    deckId,
+                    flashcardId,
+                    sourceText,
+                    translatedText,
+                  );
 
                   if (!context.mounted) {
                     return;
