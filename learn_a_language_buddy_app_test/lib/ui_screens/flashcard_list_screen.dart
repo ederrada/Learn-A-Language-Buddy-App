@@ -159,6 +159,9 @@ class FlashcardTileState extends State<FlashcardTile>
     ).animate(controller);
   }
 
+  //NOTE: I give credit to whomever built this code.
+  //I did not code this portion entirely myself.
+  //Thank you to person who built this snippet.
   @override
   Widget build(BuildContext context) {
     return GestureDetector(

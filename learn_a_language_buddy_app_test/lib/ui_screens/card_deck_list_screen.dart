@@ -78,9 +78,9 @@ class CardDeckListScreen extends StatelessWidget {
                   if (cardDecks == null || cardDecks.isEmpty) {
                     return const Center(
                       child: Text(
-                        'No card decks found.\nClick on \'Create\' to add a new deck.',
-                        textAlign: TextAlign.center,
-                      ),
+                          'No card decks found.\nClick on \'Create\' to add a new deck.',
+                          textAlign: TextAlign.center,
+                          style: TextStyle(fontSize: 20.0)),
                     );
                   }
                   return ListView.builder(

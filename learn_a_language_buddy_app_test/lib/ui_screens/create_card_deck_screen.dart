@@ -133,7 +133,7 @@ class CreateCardDeckScreen extends StatelessWidget {
                   );
                 }
               },
-              child: const Text('Save New Deck'),
+              child: const Text('Save Deck'),
             ),
           ],
         ),

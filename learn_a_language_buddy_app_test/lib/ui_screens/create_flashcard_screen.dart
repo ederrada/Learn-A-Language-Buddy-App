@@ -10,9 +10,7 @@ import 'package:translator/translator.dart';
 class CreateFlashcardScreen extends StatefulWidget {
   final CardDeck cardDeck;
 
-  const CreateFlashcardScreen(
-      {Key? key,
-      required this.cardDeck})
+  const CreateFlashcardScreen({Key? key, required this.cardDeck})
       : super(key: key);
 
   @override
@@ -49,7 +47,7 @@ class CreateFlashcardScreenState extends State<CreateFlashcardScreen> {
             centerTitle: true,
             actions: [
               IconButton(
-                icon: Icon(Icons.logout),
+                icon: const Icon(Icons.logout),
                 onPressed: () {
                   auth.signOut();
                   Navigator.pushReplacement(
@@ -70,6 +68,8 @@ class CreateFlashcardScreenState extends State<CreateFlashcardScreen> {
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
             TextFormField(
+              textAlign: TextAlign.center,
+              style: const TextStyle(fontSize: 20.0),
               controller: frontTextController,
               decoration:
                   const InputDecoration(labelText: 'Enter text to translate'),
@@ -80,20 +80,19 @@ class CreateFlashcardScreenState extends State<CreateFlashcardScreen> {
             const SizedBox(height: 20.0),
             Text(
               translatedText,
+              textAlign: TextAlign.center,
               style: const TextStyle(
-                fontSize: 20,
+                fontSize: 30,
                 fontWeight: FontWeight.bold,
               ),
             ),
             const SizedBox(height: 20.0),
             ElevatedButton(
               onPressed: () async {
-
                 // Get the entered source text
                 String sourceText = frontTextController.text.trim();
 
                 if (sourceText.isEmpty) {
-
                   showDialog(
                     context: context,
                     builder: (context) => AlertDialog(
@@ -143,8 +142,7 @@ class CreateFlashcardScreenState extends State<CreateFlashcardScreen> {
                         TextButton(
                           onPressed: () {
                             Navigator.pop(context);
-                            Navigator.pop(
-                                context);
+                            Navigator.pop(context);
                           },
                           child: const Text('OK'),
                         ),
@@ -155,7 +153,6 @@ class CreateFlashcardScreenState extends State<CreateFlashcardScreen> {
                   // Clear fields after successful creation
                   frontTextController.clear();
                 } catch (e) {
-
                   showDialog(
                     context: context,
                     builder: (context) => AlertDialog(
