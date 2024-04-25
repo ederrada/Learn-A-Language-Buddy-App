@@ -39,7 +39,7 @@ class CardDeckListScreen extends StatelessWidget {
                       context,
                       MaterialPageRoute(
                         builder: (context) =>
-                            FlashcardListScreen(deckIndex: index),
+                            FlashcardListScreen(cardDeck: cardDeck),
 
                         //FlashcardListScreen(deckId: cardDeck.id),
                       ),

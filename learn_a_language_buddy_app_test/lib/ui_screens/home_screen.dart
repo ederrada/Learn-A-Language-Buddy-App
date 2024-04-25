@@ -197,7 +197,7 @@ class HomeScreen extends StatelessWidget {
                             context,
                             MaterialPageRoute(
                               builder: (context) => FlashcardListScreen(
-                                deckIndex: index,
+                                cardDeck: cardDeck,
                               ),
                             ),
                           );

@@ -72,7 +72,7 @@ class FirestoreService {
         'title': title,
         'category': category,
         //'language': language,
-        'flashcardCount': 0,
+        //'flashcardCount': 0,
         'createdAt': FieldValue.serverTimestamp(),
       });
 
@@ -92,17 +92,6 @@ class FirestoreService {
   }
 
   //READ: Retrieve all card decks for a user
-  // Stream<List<DocumentSnapshot>> getCardDecks(String userId) {
-  //   return db
-  //       .collection('users')
-  //       .doc(userId)
-  //       .collection('cardDecks')
-  //       .snapshots()
-  //       .map(
-  //         (snapshot) => snapshot.docs.toList(),
-  //       );
-  // }
-
   Stream<List<CardDeck>> getCardDecks(String userId) {
     return db
         .collection('users')
@@ -214,7 +203,7 @@ class FirestoreService {
 //Flashcards CRUD
   //CREATE: add a new flashcard to a specific card deck
   Future<void> addFlashcardToDeck(String userId, String deckId,
-      String sourceText, String translatedText) async {
+      String flashcardId, String sourceText, String translatedText) async {
     try {
       // Add the flashcard to the deck
       await db
@@ -224,6 +213,7 @@ class FirestoreService {
           .doc(deckId)
           .collection('flashcards')
           .add({
+        'flashcardId': flashcardId,
         'sourceText': sourceText,
         'translatedText': translatedText,
         'createdAt': FieldValue.serverTimestamp(),
