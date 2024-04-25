@@ -1,17 +1,19 @@
 import 'package:flutter/material.dart';
 import 'package:learn_a_language_buddy_app_test/services/fb_auth_service.dart';
 import 'package:learn_a_language_buddy_app_test/ui_screens/home_screen.dart';
+//import 'package:learn_a_language_buddy_app_test/ui_screens/home_screen.dart';
 
-class RegisterScreen extends StatefulWidget {
+class LoginScreen extends StatefulWidget {
+  const LoginScreen({super.key});
+
   @override
-  RegisterScreenState createState() => RegisterScreenState();
+  LoginScreenState createState() => LoginScreenState();
 }
 
-class RegisterScreenState extends State<RegisterScreen> {
+class LoginScreenState extends State<LoginScreen> {
   final AuthService authService = AuthService();
   final TextEditingController emailController = TextEditingController();
   final TextEditingController passwordController = TextEditingController();
-  final TextEditingController displayNameController = TextEditingController();
 
   final formKey = GlobalKey<FormState>();
 
@@ -26,7 +28,7 @@ class RegisterScreenState extends State<RegisterScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Register'),
+        title: const Text('Login'),
       ),
       body: Padding(
         padding: const EdgeInsets.all(20.0),
@@ -35,16 +37,6 @@ class RegisterScreenState extends State<RegisterScreen> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              TextFormField(
-                controller: displayNameController,
-                decoration: const InputDecoration(labelText: 'Display Name'),
-                validator: (value) {
-                  if (value!.isEmpty) {
-                    return 'Please enter a display name';
-                  }
-                  return null;
-                },
-              ),
               TextFormField(
                 controller: emailController,
                 decoration: const InputDecoration(labelText: 'Email'),
@@ -71,48 +63,32 @@ class RegisterScreenState extends State<RegisterScreen> {
                 onPressed: () async {
                   if (formKey.currentState!.validate()) {
                     try {
-                      await authService.registerWithEmailAndPassword(
-                        displayNameController.text.trim(),
+                      await authService.signInWithEmailAndPassword(
                         emailController.text.trim(),
                         passwordController.text.trim(),
                       );
-                      await authService.updateUserDisplayName(
-                        displayNameController.text.trim(),
-                      );
 
-                      // Navigate to create deck screen
                       if (!context.mounted) {
                         return;
                       }
-
-                      showSnackBar('Registration successful.');
+                      // Navigate to home screen upon successful login
                       Navigator.pushReplacement(
                         context,
-                        MaterialPageRoute(
-                          builder: (context) => HomeScreen(),
-                        ),
+                        MaterialPageRoute(builder: (context) => HomeScreen()),
                       );
                     } catch (e) {
-                      showSnackBar(e.toString());
-                      print('Error registering user: $e');
-                      // Handle registration error (show error message, etc.)
+                      showSnackBar(
+                          'Login failed. Please check your credentials.');
+                      print('Error signing in: $e');
                     }
                   }
                 },
-                child: const Text('Register'),
+                child: const Text('Login'),
               ),
             ],
           ),
         ),
       ),
     );
-  }
-
-  @override
-  void dispose() {
-    emailController.dispose();
-    passwordController.dispose();
-    displayNameController.dispose();
-    super.dispose();
   }
 }

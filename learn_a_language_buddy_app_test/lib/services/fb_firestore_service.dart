@@ -1,4 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:learn_a_language_buddy_app_test/models/card_deck.dart';
 
 class FirestoreService {
   final FirebaseFirestore db = FirebaseFirestore.instance;
@@ -7,6 +8,9 @@ class FirestoreService {
   //calls to Google Translate API
   final CollectionReference<Map<String, dynamic>> flashcardsCollection =
       FirebaseFirestore.instance.collection('flashcards');
+
+
+
 
 //User CRUD
   //CREATE: Create a user
@@ -64,11 +68,13 @@ class FirestoreService {
 //Card Deck CRUD
   //CREATE: Create a new card deck for a user
   Future<void> createCardDeck(
-      String userId, String title, String category) async {
+      String userId, String deckId, String title, String category) async {
     try {
       await db.collection('users').doc(userId).collection('cardDecks').add({
+        'deckId': deckId,
         'title': title,
         'category': category,
+        //'language': language,
         'createdAt': FieldValue.serverTimestamp(),
         'flashcardCount': 0,
       });
@@ -79,20 +85,80 @@ class FirestoreService {
   }
 
   //READ: Retrieve all card decks for a user
-  Stream<List<DocumentSnapshot>> getCardDecks(String userId) {
-    return db
-        .collection('users')
-        .doc(userId)
-        .collection('cardDecks')
-        .snapshots()
-        .map(
-          (snapshot) => snapshot.docs.toList(),
-        );
-  }
+  // Stream<List<DocumentSnapshot>> getCardDecks(String userId) {
+  //   return db
+  //       .collection('users')
+  //       .doc(userId)
+  //       .collection('cardDecks')
+  //       .snapshots()
+  //       .map(
+  //         (snapshot) => snapshot.docs.toList(),
+  //       );
+  // }
+
+  Stream<List<CardDeck>> getCardDecks(String userId) {
+   return db
+      .collection('users')
+      .doc(userId)
+      .collection('cardDecks')
+      .snapshots()
+      .map((snapshot) {
+    List<CardDeck> cardDecks = [];
+    for (var doc in snapshot.docs) {
+      var data = doc.data();
+      String deckId = doc.id;
+      String title = data['title'] ?? '';
+      String category = data['category'] ?? '';
+
+      // Create a CardDeck object and add it to the list
+      CardDeck cardDeck = CardDeck(
+        id: deckId,
+        title: title,
+        category: category,
+        createdAt: FieldValue.serverTimestamp(),
+      );
+      cardDecks.add(cardDeck);
+    }
+    return cardDecks;
+  });
+}
+
+//   Stream<List<CardDeck>> getCardDecks() {
+//   return db
+//       .collection('users') // Assuming card decks are stored under 'users' collection
+//       .snapshots()
+//       .map((snapshot) {
+//     List<CardDeck> cardDecks = [];
+//     for (var doc in snapshot.docs) {
+//       var data = doc.data();
+//       // Extract necessary fields from the document data
+//       String deckId = doc.id;
+//       String title = data['title'] ?? '';
+//       String category = data['category'] ?? '';
+//       // String language = data['language'] ?? '';
+//       // int flashcardCount = data['flashcardCount'] ?? 0;
+
+//       // Create a CardDeck object and add it to the list
+//       CardDeck cardDeck = CardDeck(
+//         id: deckId,
+//         title: title,
+//         category: category,
+//         // language: language,
+//         // flashcardCount: flashcardCount,
+//         createdAt: FieldValue.serverTimestamp(), // Use DateTime.now() as a placeholder for createdAt
+//       );
+//       cardDecks.add(cardDeck);
+//     }
+//     return cardDecks;
+//   });
+// }
+
+
+
 
   //UPDATE: Update a card deck information
-  Future<void> updateCardDeck(
-      String userId, String deckId, String title, String category) async {
+  Future<void> updateCardDeck(String userId, String deckId, String title,
+      String category, String language) async {
     try {
       await db
           .collection('users')
@@ -102,6 +168,7 @@ class FirestoreService {
           .update({
         'title': title,
         'category': category,
+        'language': language,
       });
     } catch (e) {
       print('Error updating card deck: $e');
