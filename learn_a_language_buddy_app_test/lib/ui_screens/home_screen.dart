@@ -130,11 +130,13 @@
 
 //import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
 import 'package:learn_a_language_buddy_app_test/models/card_deck.dart';
 import 'package:learn_a_language_buddy_app_test/services/fb_auth_service.dart';
 import 'package:learn_a_language_buddy_app_test/services/fb_firestore_service.dart'; // Import your FirestoreService
 import 'package:learn_a_language_buddy_app_test/ui_screens/create_card_deck_screen.dart';
-import 'package:learn_a_language_buddy_app_test/ui_screens/card_deck_list_screen.dart';
+import 'package:learn_a_language_buddy_app_test/ui_screens/flashcard_list_screen.dart';
+//import 'package:learn_a_language_buddy_app_test/ui_screens/card_deck_list_screen.dart';
 
 class HomeScreen extends StatelessWidget {
   final FirestoreService db = FirestoreService();
@@ -194,8 +196,9 @@ class HomeScreen extends StatelessWidget {
                           Navigator.push(
                             context,
                             MaterialPageRoute(
-                              builder: (context) =>
-                                  CardDeckListScreen(userId: auth.getCurrentUser()!.uid,),
+                              builder: (context) => FlashcardListScreen(
+                                deckIndex: index,
+                              ),
                             ),
                           );
                         },
@@ -203,8 +206,17 @@ class HomeScreen extends StatelessWidget {
                           margin: const EdgeInsets.all(8.0),
                           child: ListTile(
                             title: Text(cardDeck.title),
-                            subtitle: Text('Category: ${cardDeck.category}'),
-                            //subtitle: Text('Category: ${cardDeck.category} | Flashcards: ${cardDeck.flashcardCount}'),
+                            //subtitle: Text('Category: ${cardDeck.category}'),
+                            subtitle: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Text(
+                                    'Category: ${cardDeck.category} | Flashcards: ${cardDeck.flashcardCount}'),
+                                Text(
+                                    'Created: ${DateFormat.yMMMd().format(cardDeck.createdAt)}'),
+                              ],
+                            ),
+
                             trailing: const Icon(Icons.arrow_forward_ios),
                           ),
                         ),
