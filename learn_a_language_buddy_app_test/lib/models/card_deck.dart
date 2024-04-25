@@ -1,7 +1,3 @@
-//import 'package:cloud_firestore/cloud_firestore.dart';
-
-//import 'package:cloud_firestore/cloud_firestore.dart';
-
 class CardDeck {
   final String id;
   final String title;
@@ -19,15 +15,3 @@ class CardDeck {
     required this.createdAt,
   });
 }
-
-// class Flashcard {
-//   final String id;
-//   final String frontText;
-//   final String backText;
-
-//   Flashcard({
-//     required this.id,
-//     required this.frontText,
-//     required this.backText,
-//   });
-// }

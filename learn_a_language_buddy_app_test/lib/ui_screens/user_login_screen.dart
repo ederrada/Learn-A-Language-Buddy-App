@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:learn_a_language_buddy_app_test/services/fb_auth_service.dart';
-import 'package:learn_a_language_buddy_app_test/ui_screens/home_screen.dart';
+import 'package:learn_a_language_buddy_app_test/ui_screens/card_deck_list_screen.dart';
+import 'package:learn_a_language_buddy_app_test/ui_screens/welcome_screen.dart';
 //import 'package:learn_a_language_buddy_app_test/ui_screens/home_screen.dart';
 
 class LoginScreen extends StatefulWidget {
@@ -27,15 +28,22 @@ class LoginScreenState extends State<LoginScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('Login'),
+      appBar: PreferredSize(
+        preferredSize: const Size.fromHeight(kToolbarHeight + 20.0),
+        child: Padding(
+          padding: const EdgeInsets.only(top: 50.0),
+          child: AppBar(
+            title: const Text('Login'),
+            centerTitle: true,
+          ),
+        ),
       ),
       body: Padding(
-        padding: const EdgeInsets.all(20.0),
+        padding: const EdgeInsets.all(40.0),
         child: Form(
           key: formKey,
           child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
+            crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
               TextFormField(
                 controller: emailController,
@@ -58,8 +66,8 @@ class LoginScreenState extends State<LoginScreen> {
                   return null;
                 },
               ),
-              const SizedBox(height: 20.0),
-              ElevatedButton(
+              const SizedBox(height: 30.0),
+              OutlinedButton(
                 onPressed: () async {
                   if (formKey.currentState!.validate()) {
                     try {
@@ -71,10 +79,10 @@ class LoginScreenState extends State<LoginScreen> {
                       if (!context.mounted) {
                         return;
                       }
-                      // Navigate to home screen upon successful login
                       Navigator.pushReplacement(
                         context,
-                        MaterialPageRoute(builder: (context) => HomeScreen()),
+                        MaterialPageRoute(
+                            builder: (context) => CardDeckListScreen()),
                       );
                     } catch (e) {
                       showSnackBar(
@@ -85,10 +93,29 @@ class LoginScreenState extends State<LoginScreen> {
                 },
                 child: const Text('Login'),
               ),
+              const SizedBox(height: 10.0),
+              OutlinedButton(
+                onPressed: () {
+                  Navigator.pushReplacement(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => const WelcomeScreen(),
+                    ),
+                  );
+                },
+                child: const Text('Cancel'),
+              ),
             ],
           ),
         ),
       ),
     );
+  }
+
+  @override
+  void dispose() {
+    emailController.dispose();
+    passwordController.dispose();
+    super.dispose();
   }
 }

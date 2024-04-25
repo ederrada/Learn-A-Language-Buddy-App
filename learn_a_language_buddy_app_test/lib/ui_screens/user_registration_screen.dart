@@ -1,8 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:learn_a_language_buddy_app_test/services/fb_auth_service.dart';
-import 'package:learn_a_language_buddy_app_test/ui_screens/home_screen.dart';
+import 'package:learn_a_language_buddy_app_test/ui_screens/card_deck_list_screen.dart';
+import 'package:learn_a_language_buddy_app_test/ui_screens/welcome_screen.dart';
 
 class RegisterScreen extends StatefulWidget {
+  const RegisterScreen({super.key});
+
   @override
   RegisterScreenState createState() => RegisterScreenState();
 }
@@ -25,15 +28,22 @@ class RegisterScreenState extends State<RegisterScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('Register'),
+      appBar: PreferredSize(
+        preferredSize: const Size.fromHeight(kToolbarHeight + 20.0),
+        child: Padding(
+          padding: const EdgeInsets.only(top: 50.0),
+          child: AppBar(
+            title: const Text('Register'),
+            centerTitle: true,
+          ),
+        ),
       ),
       body: Padding(
-        padding: const EdgeInsets.all(20.0),
+        padding: const EdgeInsets.all(40.0),
         child: Form(
           key: formKey,
           child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
+            crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
               TextFormField(
                 controller: displayNameController,
@@ -66,40 +76,51 @@ class RegisterScreenState extends State<RegisterScreen> {
                   return null;
                 },
               ),
-              const SizedBox(height: 20.0),
-              ElevatedButton(
-                onPressed: () async {
-                  if (formKey.currentState!.validate()) {
-                    try {
-                      await authService.registerWithEmailAndPassword(
-                        displayNameController.text.trim(),
-                        emailController.text.trim(),
-                        passwordController.text.trim(),
-                      );
-                      await authService.updateUserDisplayName(
-                        displayNameController.text.trim(),
-                      );
+              const SizedBox(height: 30.0),
+              OutlinedButton(
+                  onPressed: () async {
+                    if (formKey.currentState!.validate()) {
+                      try {
+                        await authService.registerWithEmailAndPassword(
+                          displayNameController.text.trim(),
+                          emailController.text.trim(),
+                          passwordController.text.trim(),
+                        );
+                        await authService.updateUserDisplayName(
+                          displayNameController.text.trim(),
+                        );
 
-                      // Navigate to create deck screen
-                      if (!context.mounted) {
-                        return;
+                        //Don't build across async gaps
+                        if (!context.mounted) {
+                          return;
+                        }
+
+                        showSnackBar('Registration successful.');
+                        Navigator.pushReplacement(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => CardDeckListScreen(),
+                          ),
+                        );
+                      } catch (e) {
+                        showSnackBar(e.toString());
+                        print('Error registering user: $e');
                       }
-
-                      showSnackBar('Registration successful.');
-                      Navigator.pushReplacement(
-                        context,
-                        MaterialPageRoute(
-                          builder: (context) => HomeScreen(),
-                        ),
-                      );
-                    } catch (e) {
-                      showSnackBar(e.toString());
-                      print('Error registering user: $e');
-                      // Handle registration error (show error message, etc.)
                     }
-                  }
+                  },
+                  child: const Text('Register'),
+                ),
+              const SizedBox(height: 10.0),
+              OutlinedButton(
+                onPressed: () {
+                  Navigator.pushReplacement(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => const WelcomeScreen(),
+                    ),
+                  );
                 },
-                child: const Text('Register'),
+                child: const Text('Cancel'),
               ),
             ],
           ),

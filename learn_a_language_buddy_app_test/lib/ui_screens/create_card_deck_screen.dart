@@ -1,13 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:learn_a_language_buddy_app_test/services/fb_auth_service.dart';
+import 'package:learn_a_language_buddy_app_test/ui_screens/welcome_screen.dart';
 import 'package:uuid/uuid.dart';
 import 'package:learn_a_language_buddy_app_test/services/fb_firestore_service.dart';
 
 class CreateCardDeckScreen extends StatelessWidget {
   final AuthService auth = AuthService();
   final TextEditingController titleController = TextEditingController();
-  final TextEditingController categoryController =
-      TextEditingController(); // Controller for category
+  final TextEditingController categoryController = TextEditingController();
   final FirestoreService db = FirestoreService();
   final Uuid uuid = const Uuid();
 
@@ -16,8 +16,29 @@ class CreateCardDeckScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('Create Card Deck'),
+      appBar: PreferredSize(
+        preferredSize: const Size.fromHeight(kToolbarHeight + 20.0),
+        child: Padding(
+          padding: const EdgeInsets.only(top: 50.0),
+          child: AppBar(
+            title: const Text('Create Card Deck'),
+            centerTitle: true,
+            actions: [
+              IconButton(
+                icon: const Icon(Icons.logout),
+                onPressed: () {
+                  auth.signOut();
+                  Navigator.pushReplacement(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => const WelcomeScreen(),
+                    ),
+                  );
+                },
+              ),
+            ],
+          ),
+        ),
       ),
       body: Padding(
         padding: const EdgeInsets.all(20.0),
@@ -30,19 +51,16 @@ class CreateCardDeckScreen extends StatelessWidget {
             ),
             const SizedBox(height: 20.0),
             TextFormField(
-              controller: categoryController, // Use categoryController
+              controller: categoryController,
               decoration: const InputDecoration(labelText: 'Category'),
             ),
             const SizedBox(height: 20.0),
             ElevatedButton(
               onPressed: () async {
-                // Get the entered title and category
                 String title = titleController.text.trim();
-                String category =
-                    categoryController.text.trim(); // Get category
+                String category = categoryController.text.trim();
 
                 if (title.isEmpty || category.isEmpty) {
-                  // Show error message if title or category is empty
                   showDialog(
                     context: context,
                     builder: (context) => AlertDialog(
@@ -73,13 +91,13 @@ class CreateCardDeckScreen extends StatelessWidget {
                     title,
                     category,
                     //'English',
+                    //Will implement other languages next iteration
                   );
 
                   if (!context.mounted) {
                     return;
                   }
 
-                  // Show success message
                   showDialog(
                     context: context,
                     builder: (context) => AlertDialog(
@@ -88,9 +106,8 @@ class CreateCardDeckScreen extends StatelessWidget {
                       actions: [
                         TextButton(
                           onPressed: () {
-                            Navigator.pop(context); // Close success dialog
-                            Navigator.pop(
-                                context); // Navigate back to previous screen (HomeScreen)
+                            Navigator.pop(context);
+                            Navigator.pop(context);
                           },
                           child: const Text('OK'),
                         ),
@@ -98,11 +115,9 @@ class CreateCardDeckScreen extends StatelessWidget {
                     ),
                   );
 
-                  // Clear these fields after successful creation
                   titleController.clear();
                   categoryController.clear();
                 } catch (e) {
-                  // Show error message if creation fails
                   showDialog(
                     context: context,
                     builder: (context) => AlertDialog(
@@ -118,7 +133,7 @@ class CreateCardDeckScreen extends StatelessWidget {
                   );
                 }
               },
-              child: const Text('Create New Deck'),
+              child: const Text('Save New Deck'),
             ),
           ],
         ),
@@ -126,154 +141,3 @@ class CreateCardDeckScreen extends StatelessWidget {
     );
   }
 }
-
-// import 'package:flutter/material.dart';
-// import 'package:learn_a_language_buddy_app_test/services/fb_firestore_service.dart';
-// //TODO: Import necessary packages
-
-// class CreateCardDeckScreen extends StatelessWidget {
-//   final FirestoreService firestoreService = FirestoreService();
-//   final TextEditingController titleController = TextEditingController();
-//   final List<Map<String, dynamic>> flashcards = [];
-
-//   CreateCardDeckScreen({super.key});
-
-//   @override
-//   Widget build(BuildContext context) {
-//     return Scaffold(
-//       appBar: AppBar(
-//         title: const Text('Create Card Deck'),
-//       ),
-//       body: Padding(
-//         padding: const EdgeInsets.all(20.0),
-//         child: Column(
-//           crossAxisAlignment: CrossAxisAlignment.start,
-//           children: [
-//             TextFormField(
-//               decoration: const InputDecoration(labelText: 'Deck Title'),
-//             ),
-//             const SizedBox(height: 20.0),
-//             TextFormField(
-//               decoration: const InputDecoration(labelText: 'Description'),
-//               maxLines: 3,
-//             ),
-//             const SizedBox(height: 20.0),
-//             ElevatedButton(
-//               onPressed: () {
-//                 // TODO: Implement logic to save the new card deck
-//                 Navigator.pop(context); // To close the screen after saving
-//               },
-//               child: const Text('Save'),
-//             ),
-//           ],
-//         ),
-//       ),
-//     );
-//   }
-// }
-
-// class CreateCardDeckScreen extends StatefulWidget {
-//   @override
-//   CreateCardDeckScreenState createState() => CreateCardDeckScreenState();
-// }
-
-// class CreateCardDeckScreenState extends State<CreateCardDeckScreen> {
-//   final String _selectedLanguage = 'German'; // Default language selection
-
-//   final List<String> _targetLanguages = [
-//     'German',
-//     'Portuguese',
-//     'Spanish',
-//     'French',
-//     'Mandarin Chinese',
-//     'Italian',
-//     'Japanese',
-//   ];
-
-//   final Map<String, String> _languageCodes = {
-//     'German': 'de',
-//     'Portuguese': 'pt',
-//     'Spanish': 'es',
-//     'French': 'fr',
-//     'Mandarin Chinese': 'zh-CN',
-//     'Italian': 'it',
-//     'Japanese': 'ja',
-//   };
-
-//   final TranslationService _translationService = TranslationService();
-
-//   ElevatedButton(
-//     onPressed: () async {
-//       String userId = _authService.getCurrentUser()?.uid ?? '';
-//       if (userId.isEmpty) return;
-
-//       // Get title, category, and selected language
-//       String title = _titleController.text.trim();
-//       String category = _categoryController.text.trim();
-//       String targetLanguage = _selectedLanguage;
-
-//       // Translate the title using language code
-//       String sourceLanguageCode = 'en'; // Assuming English as the source language
-//       String targetLanguageCode = _languageCodes[targetLanguage] ?? 'en'; // Get target language code or default to English ('en')
-
-//       String translatedTitle = await _translationService.translateText(
-//         title,
-//         sourceLanguageCode,
-//         targetLanguageCode,
-//       );
-
-//       // Create the card deck using FirestoreService
-//       try {
-//         await _firestoreService.createCardDeck(
-//           userId,
-//           translatedTitle,
-//           category,
-//           targetLanguage,
-//         );
-
-//         // Show success dialog
-//         showDialog(
-//           context: context,
-//           builder: (context) => AlertDialog(
-//             title: Text('Success'),
-//             content: Text('Card deck created successfully.'),
-//             actions: [
-//               TextButton(
-//                 onPressed: () {
-//                   Navigator.pop(context);
-//                   Navigator.pop(context); // Navigate back twice
-//                 },
-//                 child: Text('OK'),
-//               ),
-//             ],
-//           ),
-//         );
-//       } catch (e) {
-//         // Show error dialog
-//         showDialog(
-//           context: context,
-//           builder: (context) => AlertDialog(
-//             title: Text('Error'),
-//             content: Text('Failed to create card deck. $e'),
-//             actions: [
-//               TextButton(
-//                 onPressed: () {
-//                   Navigator.pop(context);
-//                 },
-//                 child: Text('OK'),
-//               ),
-//             ],
-//           ),
-//         );
-//       }
-//     },
-//     child: Text('Create Deck'),
-//   )
-
-//   @override
-//   Widget build(BuildContext context) {
-//     // TODO: implement build
-//     throw UnimplementedError();
-//   },
-
-// }

@@ -8,30 +8,50 @@ class WelcomeScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('Welcome'),
+      appBar: PreferredSize(
+        preferredSize: const Size.fromHeight(kToolbarHeight + 20.0),
+        child: Padding(
+          padding: const EdgeInsets.only(top: 50.0),
+          child: AppBar(
+            centerTitle: true,
+          ),
+        ),
       ),
       body: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
           Expanded(
-            child: Placeholder(
-              color: Colors.grey[300]!, // Placeholder color
-              fallbackHeight: 200.0, // Height of the placeholder image
-              // You can replace the `assetImage` property with your own image asset path
-              // Ensure to replace it with a valid image path
-              // assetImage: 'assets/your_image.jpg',
+            child: Image.asset(
+              'assets/monkey_study.png',
             ),
           ),
           Padding(
-            padding: const EdgeInsets.all(20.0),
+            padding: const EdgeInsets.all(40.0),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
-                ElevatedButton(
+                const Padding(
+                  padding: EdgeInsets.only(bottom: 20),
+                  child: Text(
+                    'LEARN-A-LANGUAGE BUDDY',
+                    style: TextStyle(
+                        color: Colors.deepPurple,
+                        fontSize: 16.0,
+                        fontWeight: FontWeight.bold),
+                  ),
+                ),
+                const Text(
+                  'Learn a Language in a Flash!',
+                  style: TextStyle(
+                    fontSize: 24.0,
+                    fontWeight: FontWeight.normal,
+                  ),
+                  textAlign: TextAlign.center,
+                ),
+                const SizedBox(height: 40.0),
+                OutlinedButton(
                   onPressed: () {
-                    // Navigate to the login screen
                     Navigator.pushReplacement(
                       context,
                       MaterialPageRoute(
@@ -44,11 +64,10 @@ class WelcomeScreen extends StatelessWidget {
                 const SizedBox(height: 10.0),
                 OutlinedButton(
                   onPressed: () {
-                    // Navigate to the register screen
                     Navigator.pushReplacement(
                       context,
                       MaterialPageRoute(
-                        builder: (context) => RegisterScreen(),
+                        builder: (context) => const RegisterScreen(),
                       ),
                     );
                   },
@@ -57,6 +76,7 @@ class WelcomeScreen extends StatelessWidget {
               ],
             ),
           ),
+          const SizedBox(height: 70.0),
         ],
       ),
     );

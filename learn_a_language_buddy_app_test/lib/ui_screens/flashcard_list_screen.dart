@@ -1,86 +1,10 @@
-// import 'package:flutter/material.dart';
-// //TODO: Import necessary packages
-
-// class FlashcardListScreen extends StatelessWidget {
-//   final int deckIndex;
-
-//   FlashcardListScreen({required this.deckIndex});
-
-//   @override
-//   Widget build(BuildContext context) {
-//     return Scaffold(
-//       appBar: AppBar(
-//         title: const Text('Flashcards'),
-//       ),
-//       body: ListView.builder(
-//         itemCount: 10, // TODO: Replace with actual number of flashcards
-//         itemBuilder: (context, index) {
-//           return ListTile(
-//             title: Text('Flashcard ${index + 1}'),
-//             subtitle: const Text('Front: English | Back: Spanish'), // Simulated content
-//             onTap: () {
-//               // TODO: Implement card detail view or edit functionality
-//             },
-//           );
-//         },
-//       ),
-//       floatingActionButton: FloatingActionButton(
-//         onPressed: () {
-//           // TODO: Implement logic to add a new flashcard to this deck
-//         },
-//         child: const Icon(Icons.add),
-//       ),
-//     );
-//   }
-// }
-
-// import 'package:flutter/material.dart';
-// import 'package:learn_a_language_buddy_app_test/models/card_deck.dart';
-// import 'package:learn_a_language_buddy_app_test/ui_screens/create_flashcard_screen.dart';
-
-// class FlashcardListScreen extends StatelessWidget {
-//   final CardDeck cardDeck;
-
-//   const FlashcardListScreen({super.key, required this.cardDeck});
-
-//   @override
-//   Widget build(BuildContext context) {
-//     return Scaffold(
-//       appBar: AppBar(
-//         title: Text('Flashcards for ${cardDeck.title}'),
-//       ),
-//       body: Center(
-//         child: ElevatedButton(
-//           onPressed: () {
-//             // Navigate to CreateFlashcardScreen
-//             CardDeck myCardDeck = CardDeck(
-//                 id: cardDeck.id,
-//                 title: cardDeck.title,
-//                 category: cardDeck.category,
-//                 flashcardCount: cardDeck.flashcardCount,
-//                 createdAt: cardDeck.createdAt);
-//             Navigator.push(
-//               context,
-//               MaterialPageRoute(
-//                 builder: (context) =>
-//                     CreateFlashcardScreen(cardDeck: myCardDeck),
-//               ),
-//             );
-//           },
-//           child: const Text('Create Flashcard'),
-//         ),
-//       ),
-//     );
-//   }
-// }
-
 import 'package:flutter/material.dart';
-//import 'package:intl/intl.dart';
 import 'package:learn_a_language_buddy_app_test/models/card_deck.dart';
 import 'package:learn_a_language_buddy_app_test/models/flashcard.dart';
 import 'package:learn_a_language_buddy_app_test/services/fb_auth_service.dart';
 import 'package:learn_a_language_buddy_app_test/ui_screens/create_flashcard_screen.dart';
 import 'package:learn_a_language_buddy_app_test/services/fb_firestore_service.dart';
+import 'package:learn_a_language_buddy_app_test/ui_screens/welcome_screen.dart';
 
 class FlashcardListScreen extends StatelessWidget {
   final CardDeck cardDeck;
@@ -91,15 +15,37 @@ class FlashcardListScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    String? userName = auth.getCurrentUser()!.displayName;
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('Home'),
+      appBar: PreferredSize(
+        preferredSize: const Size.fromHeight(kToolbarHeight + 20.0),
+        child: Padding(
+          padding: const EdgeInsets.only(top: 50.0),
+          child: AppBar(
+            title: Text('$userName\'s Flashcards List'),
+            centerTitle: true,
+            actions: [
+              IconButton(
+                icon: const Icon(Icons.logout),
+                onPressed: () {
+                  auth.signOut();
+                  Navigator.pushReplacement(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => const WelcomeScreen(),
+                    ),
+                  );
+                },
+              ),
+            ],
+          ),
+        ),
       ),
       body: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Padding(
-            padding: const EdgeInsets.all(20.0),
+            padding: const EdgeInsets.all(50.0),
             child: ElevatedButton(
               onPressed: () {
                 Navigator.push(
@@ -111,7 +57,10 @@ class FlashcardListScreen extends StatelessWidget {
                   ),
                 );
               },
-              child: const Text('Create Flashcards Deck'),
+              child: const Text(
+                'Create Flashcards',
+                style: TextStyle(fontSize: 18.0),
+              ),
             ),
           ),
           Expanded(
@@ -131,14 +80,38 @@ class FlashcardListScreen extends StatelessWidget {
                   List<Flashcard>? flashcards = snapshot.data;
                   if (flashcards == null || flashcards.isEmpty) {
                     return const Center(
-                      child: Text('No card decks found.'),
+                      child: Text(
+                        'No flashcards found.\nClick on \'Create\' to add a new card.',
+                        textAlign: TextAlign.center,
+                        style: TextStyle(fontSize: 20.0),
+                      ),
                     );
                   }
                   return ListView.builder(
                     itemCount: flashcards.length,
                     itemBuilder: (context, index) {
-                      return FlashcardTile(
-                        flashcard: flashcards[index],
+                      final flashcard = flashcards[index];
+                      return Dismissible(
+                        key: Key(flashcard.flashcardId),
+                        direction: DismissDirection.endToStart,
+                        background: Container(
+                          alignment: Alignment.centerRight,
+                          color: Colors.red,
+                          child: const Padding(
+                            padding: EdgeInsets.all(10.0),
+                            child: Icon(Icons.delete, color: Colors.white),
+                          ),
+                        ),
+                        onDismissed: (direction) {
+                          db.deleteFlashcardFromDeck(
+                            auth.getCurrentUser()!.uid,
+                            cardDeck.id,
+                            flashcard.flashcardId,
+                          );
+                        },
+                        child: FlashcardTile(
+                          flashcard: flashcard,
+                        ),
                       );
                     },
                   );
@@ -206,10 +179,10 @@ class FlashcardTileState extends State<FlashcardTile>
               elevation: 3,
               margin: const EdgeInsets.all(8),
               child: Container(
-                height: 200, // Fixed height for the card
+                height: 200, // Fixes height for the card
                 padding: const EdgeInsets.all(16),
                 alignment: Alignment
-                    .center, // Center the text horizontally and vertically
+                    .center, // Centers the text horizontally and vertically
                 child: Text(
                   controller.value > 0.5
                       ? widget.flashcard.translatedText
